@@ -9,22 +9,32 @@ import traceback
 from datetime import datetime
 from typing import Optional
 
+from dotenv import load_dotenv
+
 from file_processor import process_file
 from financial_calculator import calculate_kpis, generate_pl_statement
 from groq_client import get_ai_analysis
 from db import init_db, save_analysis, get_analyses
 
+load_dotenv()
+
 app = FastAPI(title="AI Financial Statement Analyzer", version="1.0.0")
+
+# Allow configuring CORS origins via environment for production safety
+allow_origins = os.getenv("CORS_ALLOW_ORIGINS", "*").split(",") if os.getenv("CORS_ALLOW_ORIGINS") else ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 init_db()
+
+# Keep secrets in environment; do not hardcode API keys.
+groq_api_key = os.getenv("GROQ_API_KEY")
 
 
 @app.get("/")
