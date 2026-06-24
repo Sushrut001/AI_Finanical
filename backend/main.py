@@ -9,13 +9,17 @@ import traceback
 from datetime import datetime
 from typing import Optional
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from dotenv import load_dotenv
 
 from file_processor import process_file
 from financial_calculator import calculate_kpis, generate_pl_statement
 from groq_client import get_ai_analysis
 from db import init_db, save_analysis, get_analyses
-
+import pandas as pd  # if this line exists, that's the problem
 load_dotenv()
 
 app = FastAPI(title="AI Financial Statement Analyzer", version="1.0.0")
@@ -35,6 +39,7 @@ init_db()
 
 # Keep secrets in environment; do not hardcode API keys.
 groq_api_key = os.getenv("GROQ_API_KEY")
+ 
 
 
 @app.get("/")
